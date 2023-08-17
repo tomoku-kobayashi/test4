@@ -2,8 +2,65 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<Inject HttpClient="httpClient" />
 
-Welcome to your new app.
+<div class="custom-width800">
+    <MudTextField @bind-Value="従業員ＣＤ" Label="従業員ＣＤ" Variant="Variant.Outlined" />
+</div>
+<div class="custom-width800">
+    <MudTextField @bind-Value="従業員名" Label="従業員名" Variant="Variant.Outlined" />
+</div>
+<div class="custom-width800">
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="buttonclick">Click me</MudButton>
+</div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<style>
+    .custom-width800 {
+        width: 800px;
+    }
+</style>
+
+@code {
+    [Inject] private HttpClient httpClient { get; set; }
+    
+    public int 従業員ＣＤ { get; set; }
+    public string 従業員名 { get; set; }
+
+    private async Task buttonclick()
+    {
+        try
+        {
+            InsertDataModel data = new InsertDataModel
+            {
+                P従業員ＣＤ = 従業員ＣＤ,
+                P従業員名 = 従業員名
+            };
+
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/Insert.cs", data);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // 成功処理
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                ShowErrorMessage(errorContent); // エラーメッセージを表示するメソッドを呼び出す
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorMessage(ex.Message); // 例外メッセージを表示するメソッドを呼び出す
+        }
+    }
+
+    private void ShowErrorMessage(string message)
+    {
+    }
+
+    public class InsertDataModel
+    {
+        public int P従業員ＣＤ { get; set; }
+        public string P従業員名 { get; set; }
+    }
+}
